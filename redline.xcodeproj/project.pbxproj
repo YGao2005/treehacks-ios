@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2F2DFBAE2D611E52004F30FE /* TerraiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 2F2DFBAD2D611E52004F30FE /* TerraiOS */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2F2DFB8C2D60666A004F30FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +33,22 @@
 		2F2DFB952D60666A004F30FE /* redlineUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = redlineUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2F2DFBAB2D611CAF004F30FE /* Exceptions for "redline" folder in "redline" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2F2DFB7A2D606668004F30FE /* redline */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2F2DFB7D2D606668004F30FE /* redline */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2F2DFBAB2D611CAF004F30FE /* Exceptions for "redline" folder in "redline" target */,
+			);
 			path = redline;
 			sourceTree = "<group>";
 		};
@@ -52,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F2DFBAE2D611E52004F30FE /* TerraiOS in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +96,7 @@
 				2F2DFB7D2D606668004F30FE /* redline */,
 				2F2DFB8E2D60666A004F30FE /* redlineTests */,
 				2F2DFB982D60666A004F30FE /* redlineUITests */,
+				2F2DFBAC2D611E52004F30FE /* Frameworks */,
 				2F2DFB7C2D606668004F30FE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +109,13 @@
 				2F2DFB952D60666A004F30FE /* redlineUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2F2DFBAC2D611E52004F30FE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +138,7 @@
 			);
 			name = redline;
 			packageProductDependencies = (
+				2F2DFBAD2D611E52004F30FE /* TerraiOS */,
 			);
 			productName = redline;
 			productReference = 2F2DFB7B2D606668004F30FE /* redline.app */;
@@ -195,6 +222,9 @@
 			);
 			mainGroup = 2F2DFB722D606668004F30FE;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2F2DFBA82D611C61004F30FE /* XCRemoteSwiftPackageReference "TerraiOS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2F2DFB7C2D606668004F30FE /* Products */;
 			projectDirPath = "";
@@ -393,12 +423,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = redline/redline.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"redline/Preview Content\"";
 				DEVELOPMENT_TEAM = PBTJSSD9T5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = redline/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share your health data to power our app";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -422,12 +455,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = redline/redline.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"redline/Preview Content\"";
 				DEVELOPMENT_TEAM = PBTJSSD9T5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = redline/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share your health data to power our app";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -558,6 +594,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2F2DFBA82D611C61004F30FE /* XCRemoteSwiftPackageReference "TerraiOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tryterra/TerraiOS";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.6.24;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2F2DFBAD2D611E52004F30FE /* TerraiOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F2DFBA82D611C61004F30FE /* XCRemoteSwiftPackageReference "TerraiOS" */;
+			productName = TerraiOS;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2F2DFB732D606668004F30FE /* Project object */;
 }
