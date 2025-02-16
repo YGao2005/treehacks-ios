@@ -49,9 +49,24 @@ struct DestressorView: View {
             
             // Format date in required format (YYYY-MM-DDTHH:MM:SS)
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-            let dateString = dateFormatter.string(from: Date())
+            func generateRandomTime() -> String {
+                let now = Date()
+                let oneWeekFromNow = Calendar.current.date(byAdding: .day, value: 7, to: now)!
+                
+                // Generate random time between now and next week
+                let randomTimeInterval = TimeInterval.random(
+                    in: now.timeIntervalSinceNow...oneWeekFromNow.timeIntervalSinceNow
+                )
+                let randomDate = Date(timeIntervalSinceNow: randomTimeInterval)
+                
+                // Format the date
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                return dateFormatter.string(from: randomDate)
+            }
             
+            let dateString = generateRandomTime()
+
             // Create calendar request payload
             let calendarPayload: [String: Any] = [
                 "destresser_data": recommendations,
@@ -244,7 +259,7 @@ struct DestressorButton: View {
                 viewerState.rotateModel()
             } else {
                 viewerState.startBlinkingAnimation()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 8.0) {
                     viewerState.rotateBackModel()
                     viewerState.stopBlinkingAnimation()
                 }

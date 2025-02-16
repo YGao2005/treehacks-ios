@@ -6,6 +6,7 @@ struct VoiceInputView: View {
     @ObservedObject var viewerState: ModelViewerState
     @StateObject private var audioRecorder = AudioRecorder()
     @State private var editableText = ""
+    @State private var submittedScheduleText = "Schedule a dinner on February 19th from 6:30PM to 7:30PM with my mom"
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var showSuccess = false
@@ -16,24 +17,26 @@ struct VoiceInputView: View {
     
     func submitVoiceInput() async {
         do {
-            guard let url = URL(string: "http://127.0.0.1:5002/voice-input") else {
+            guard let url = URL(string: "http://10.32.81.229:5002/create-event")
+            else {
                 throw URLError(.badURL)
             }
-            
+
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            
-            let body = ["user_input": editableText]
+
+            let body = ["user_input": submittedScheduleText]
             request.httpBody = try JSONEncoder().encode(body)
-            
+
             let (_, response) = try await URLSession.shared.data(for: request)
-            
+
             if let httpResponse = response as? HTTPURLResponse,
-               !(200...299).contains(httpResponse.statusCode) {
+                !(200...299).contains(httpResponse.statusCode)
+            {
                 DispatchQueue.main.async {
                     showError = true
-                    errorMessage = "Failed to submit voice input"
+                    errorMessage = "Failed to submit schedule"
                 }
             }
         } catch {
@@ -43,6 +46,7 @@ struct VoiceInputView: View {
             }
         }
     }
+    
     
     func closeView() {
         withAnimation(.easeOut(duration: 0.3)) {

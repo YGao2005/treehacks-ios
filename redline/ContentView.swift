@@ -27,7 +27,7 @@ struct ContentView: View {
                 viewerState: viewerState
             )
             .edgesIgnoringSafeArea(.all)
-            .transition(.opacity)
+            .transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.3)))
             .padding(.bottom, 40)
             .ignoresSafeArea(.keyboard) // Ignore keyboard
 
@@ -43,7 +43,7 @@ struct ContentView: View {
                         y: geometry.size.height / 2
                     )
                 }
-                .transition(.opacity)
+                .transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.3)))
                 .ignoresSafeArea(.keyboard)
                 .padding(.bottom, 90)
             }
@@ -56,7 +56,7 @@ struct ContentView: View {
                             y: geometry.size.height / 2
                         )
                 }
-                .transition(.opacity)
+                .transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.3)))
                 .ignoresSafeArea(.keyboard)
                 .padding(.bottom, 90)
             }
@@ -70,7 +70,7 @@ struct ContentView: View {
                             y: geometry.size.height / 2
                         )
                 }
-                .transition(.opacity)
+                .transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.3)))
                 .ignoresSafeArea(.keyboard)
                 .padding(.bottom, 90)
             }
@@ -83,7 +83,7 @@ struct ContentView: View {
                             y: geometry.size.height / 2
                         )
                 }
-                .transition(.opacity)
+                .transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.3)))
                 .ignoresSafeArea(.keyboard)
                 .padding(.bottom, 90)
             }
@@ -96,7 +96,7 @@ struct ContentView: View {
                             y: geometry.size.height / 2
                         )
                 }
-                .transition(.opacity)
+                .transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.3)))
                 .ignoresSafeArea(.keyboard)
                 .padding(.bottom, 90)
             }
