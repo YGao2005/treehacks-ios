@@ -1,6 +1,8 @@
 import TerraiOS
 import SwiftUI
-
+import SceneKit
+import RealityKit
+import Metal
 
 class AppState: ObservableObject {
     @Published var terra: TerraManager?
@@ -20,147 +22,116 @@ class AppState: ObservableObject {
     }
 }
 
-import SceneKit
-import RealityKit
-import Metal
-
-
 struct SimpleModelViewer: UIViewRepresentable {
     let modelName: String
+    let value: Int  // Value from 0 to 100
     @Binding var errorMessage: String
     @Binding var showError: Bool
     
     func makeUIView(context: Context) -> SCNView {
         let sceneView = SCNView()
-        
-        // Create empty scene with basic lighting
         let scene = SCNScene()
+        
+        // Basic setup
+        //sceneView.allowsCameraControl = true
+        sceneView.backgroundColor = .black
+        
+        // Create main directional light
+        let mainLight = SCNNode()
+        mainLight.light = SCNLight()
+        mainLight.light?.type = .directional
+        mainLight.light?.intensity = 6000
+        mainLight.light?.orthographicScale = 30  // Wider light spread
+        
+        // Calculate color based on value (red to green)
+        let normalizedValue = CGFloat(max(0, min(100, value))) / 100.0
+        let red = 1.0 - normalizedValue
+        let green = normalizedValue
+        let lightColor = UIColor(red: red, green: green, blue: 0, alpha: 1.0)
+        mainLight.light?.color = lightColor
+        
+        // Position the main light
+        mainLight.position = SCNVector3(x: 0, y: 200, z: 10)
+        mainLight.eulerAngles = SCNVector3(x: -Float.pi/4, y: 0, z: 0)
+        scene.rootNode.addChildNode(mainLight)
+        
+        // Create secondary directional light
+        let secondaryLight = SCNNode()
+        secondaryLight.light = SCNLight()
+        secondaryLight.light?.type = .directional
+        secondaryLight.light?.intensity = 5500
+        secondaryLight.light?.orthographicScale = 30
+        secondaryLight.light?.color = lightColor
+        
+        // Position the secondary light from a different angle
+        secondaryLight.position = SCNVector3(x: -10, y: 8, z: -5)
+        secondaryLight.look(at: SCNVector3(0, 0, 0))  // Point towards center
+        scene.rootNode.addChildNode(secondaryLight)
+        
+        // Add ambient light for base illumination
         let ambientLight = SCNNode()
         ambientLight.light = SCNLight()
         ambientLight.light?.type = .ambient
-        ambientLight.light?.intensity = 100
+        ambientLight.light?.intensity = 1000  // Increased ambient light intensity
         scene.rootNode.addChildNode(ambientLight)
         
-        // Debug logging for bundle path
-        if let bundlePath = Bundle.main.resourcePath {
-            print("Bundle resource path: \(bundlePath)")
-        }
-        
-        // Debug logging for model file
-        let fileManager = FileManager.default
+        // Load the USDZ model
         if let modelURL = Bundle.main.url(forResource: modelName, withExtension: "usdz") {
-            print("Model URL found: \(modelURL)")
-            
-            // Check if file exists
-            if fileManager.fileExists(atPath: modelURL.path) {
-                print("File exists at path")
-                
-                // Try to load model
-                do {
-                    let modelScene = try SCNScene(url: modelURL, options: [:])
-                    print("Successfully loaded model scene")
-                    
-                    // Get all child nodes
-                    let modelNodes = modelScene.rootNode.childNodes
-                    print("Found \(modelNodes.count) nodes in model")
-                    
-                    // Add them to our empty scene
-                    modelNodes.forEach { node in
-                        scene.rootNode.addChildNode(node)
-                    }
-                } catch {
-                    print("Error loading model scene: \(error)")
-                    DispatchQueue.main.async {
-                        self.errorMessage = "Error loading model: \(error.localizedDescription)"
-                        self.showError = true
-                    }
-                }
-            } else {
-                print("File does not exist at path: \(modelURL.path)")
+            do {
+                let modelScene = try SCNScene(url: modelURL, options: [:])
+                scene.rootNode.addChildNode(modelScene.rootNode)
+            } catch {
+                print("Error loading model: \(error)")
                 DispatchQueue.main.async {
-                    self.errorMessage = "File not found at path: \(modelURL.path)"
+                    self.errorMessage = "Error loading model: \(error.localizedDescription)"
                     self.showError = true
                 }
             }
-        } else {
-            print("Could not construct URL for model: \(modelName).usdz")
-            DispatchQueue.main.async {
-                self.errorMessage = "Model file not found in bundle: \(modelName).usdz"
-                self.showError = true
-            }
         }
         
-        // Configure view
         sceneView.scene = scene
-        sceneView.backgroundColor = .black
-        sceneView.autoenablesDefaultLighting = true
-        sceneView.allowsCameraControl = true
-        
-        // Add gesture recognizers
-        let panGesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
-        sceneView.addGestureRecognizer(panGesture)
-        
-        let pinchGesture = UIPinchGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePinch(_:)))
-        sceneView.addGestureRecognizer(pinchGesture)
-        
         return sceneView
     }
-    func updateUIView(_ uiView: SCNView, context: Context) {}
     
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject {
-        var parent: SimpleModelViewer
+    func updateUIView(_ uiView: SCNView, context: Context) {
+        // Update light color if needed
+        // Update all directional lights
+        let normalizedValue = CGFloat(max(0, min(100, value))) / 100.0
+        let red = 1.0 - normalizedValue
+        let green = normalizedValue
+        let newColor = UIColor(red: red, green: green, blue: 0, alpha: 1.0)
         
-        init(_ parent: SimpleModelViewer) {
-            self.parent = parent
-        }
-        
-        @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-            guard let sceneView = gesture.view as? SCNView else { return }
-            let translation = gesture.translation(in: sceneView)
-            
-            let rotationY = Float(translation.x) * 0.01
-            let rotationX = Float(translation.y) * 0.01
-            
-            sceneView.scene?.rootNode.childNodes.forEach { node in
-                node.rotation = SCNVector4(1, 0, 0, rotationX)
-                node.rotation = SCNVector4(0, 1, 0, rotationY)
+        uiView.scene?.rootNode.childNodes.forEach { node in
+            if node.light?.type == .directional {
+                node.light?.color = newColor
             }
-            
-            gesture.setTranslation(.zero, in: sceneView)
-        }
-        
-        @objc func handlePinch(_ gesture: UIPinchGestureRecognizer) {
-            guard let sceneView = gesture.view as? SCNView else { return }
-            let scale = Float(gesture.scale)
-            
-            sceneView.scene?.rootNode.childNodes.forEach { node in
-                node.scale = SCNVector3(scale, scale, scale)
-            }
-            
-            gesture.scale = 1.0
         }
     }
 }
 
-// Main View
 struct ContentView: View {
     let modelName: String
+    @State private var value: Int = 50  // Default value
     @State private var showError = false
     @State private var errorMessage = ""
     
     var body: some View {
-        ZStack {
+        VStack {
             SimpleModelViewer(modelName: modelName,
+                            value: value,
                             errorMessage: $errorMessage,
                             showError: $showError)
                 .edgesIgnoringSafeArea(.all)
-                .onAppear {
-                    validateModel()
-                }
+            
+            Slider(value: Binding(
+                get: { Double(value) },
+                set: { value = Int($0) }
+            ), in: 0...100, step: 1)
+            .padding()
+            
+            Text("Value: \(value)")
+                .foregroundColor(.white)
+                .padding(.bottom)
             
             if showError {
                 VStack {
@@ -177,40 +148,6 @@ struct ContentView: View {
                 .cornerRadius(10)
                 .padding()
             }
-        }
-    }
-    
-    private func validateModel() {
-        // Check if file exists in bundle
-        if let resourcePath = Bundle.main.resourcePath {
-            print("Checking resource path: \(resourcePath)")
-            
-            // List all files in bundle for debugging
-            do {
-                let files = try FileManager.default.contentsOfDirectory(atPath: resourcePath)
-                print("Files in bundle:")
-                files.forEach { print($0) }
-            } catch {
-                print("Error listing bundle contents: \(error)")
-            }
-        }
-        
-        // Validate model file
-        guard let url = Bundle.main.url(forResource: modelName, withExtension: "usdz") else {
-            showError = true
-            errorMessage = "Model file not found in bundle: \(modelName).usdz"
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            if data.isEmpty {
-                showError = true
-                errorMessage = "Model file is empty"
-            }
-        } catch {
-            showError = true
-            errorMessage = "Error loading model: \(error.localizedDescription)"
         }
     }
 }
