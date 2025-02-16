@@ -14,7 +14,7 @@ struct redlineApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(modelName: "Particle_Wave")
+            ContentView(modelName: "Particle_Wave", modelValue: 15)
         }
     }
 }
